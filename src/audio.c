@@ -36,6 +36,7 @@ audio_run_2a03()
 	}
 
 	SDL_QueueAudio( device, sample_buffer, sizeof(sample_buffer) );
+	wav_file_write_samples( audio_out, sample_buffer, sizeof(sample_buffer) );
 }
 
 void
