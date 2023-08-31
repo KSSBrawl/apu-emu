@@ -16,3 +16,9 @@ git clone https://github.com/KSSBrawl/apu-emu.git
 cd apu-emu
 make
 ```
+# Build configuration
+The following build options are available to pass to Make:
+| Option           | Description                                        |
+|------------------|----------------------------------------------------|
+| DEBUG            | 1 = Debug build                                    |
+| USE_MIXER_LOOKUP | 1 = Use lookup tables to approximate the APU mixer |

@@ -194,6 +194,11 @@ static const float lp_coeffs[LP_FILTER_W] = {
     0.001849518640956687
 };
 
+#ifdef APU_MIXER_USE_LOOKUP
+static float pulse_table[31];
+static float tnd_table[203];
+#endif
+
 static void
 update_sweep_freq( ApuChan *ch )
 {
@@ -510,13 +515,26 @@ apu_clock( float *sample_out, unsigned int *irq_out )
 	// calculate channel output levels
 	// (magic numbers courtesy of https://www.nesdev.org/wiki/APU_Mixer)
 
-	const float sq1_out		= volume( sq1 ) * sq1->sequencer_val;
-	const float sq2_out		= volume( sq2 ) * sq2->sequencer_val;
-	const float tri_out		= tri->sequencer_val / 8227.0f;
-	const float noi_out		= volume( noi ) * apu.feedback / 12241.0f;
-	const float dmc_out		= apu.dmc_lvl / 22638.0f;
-	const float pulse_out	= 95.88f / ( 8128.0f / ( sq1_out + sq2_out ) + 100 );
-	const float tnd_out		= 159.79f / ( ( 1.0f / ( tri_out + noi_out + dmc_out ) ) + 100 );
+
+#ifdef APU_MIXER_USE_LOOKUP
+	int sq1_out		= volume( sq1 ) * sq1->sequencer_val;
+	int sq2_out		= volume( sq2 ) * sq2->sequencer_val;
+	int tri_out		= tri->sequencer_val;
+	int noi_out		= volume( noi ) * apu.feedback;
+	int dmc_out		= apu.dmc_lvl;
+	
+	float pulse_out	= pulse_table[sq1_out + sq2_out];
+	float tnd_out	= tnd_table[3 * tri_out + 2 * noi_out + dmc_out];
+#else
+	float sq1_out	= volume( sq1 ) * sq1->sequencer_val;
+	float sq2_out	= volume( sq2 ) * sq2->sequencer_val;
+	float tri_out	= tri->sequencer_val / 8227.0f;
+	float noi_out	= volume( noi ) * apu.feedback / 12241.0f;
+	float dmc_out	= apu.dmc_lvl / 22638.0f;
+
+	float pulse_out	= 95.88f / ( 8128.0f / ( sq1_out + sq2_out ) + 100 );
+	float tnd_out	= 159.79f / ( ( 1.0f / ( tri_out + noi_out + dmc_out ) ) + 100 );
+#endif
 
 	// apply high pass
 
@@ -790,4 +808,17 @@ apu_init()
 	apu.dmc_adr_internal		= 0xc000;
 	apu.dmc_len_internal		= 0;
 	apu.chans[4].freq			= dmc_period_tab[0] - 1;
+
+#ifdef APU_MIXER_USE_LOOKUP
+	// generate mixer lookup tables
+
+	for ( int i = 0; i < 31; i++ )
+	{
+		pulse_table[i] = 95.52f / ( 8128.0f / i + 100 );
+	}
+	for ( int i = 0; i < 203; i++ )
+	{
+		tnd_table[i] = 163.67f / ( 24329.0f / i + 100 );
+	}
+#endif
 }

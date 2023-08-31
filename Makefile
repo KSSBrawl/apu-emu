@@ -59,6 +59,11 @@ else
 	CFLAGS += -O2
 endif
 
+USE_MIXER_LOOKUP ?= 0
+ifeq ($(USE_MIXER_LOOKUP), 1)
+	CFLAGS += -DAPU_MIXER_USE_LOOKUP
+endif
+
 ##################################################
 # Rules
 ##################################################
