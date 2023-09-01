@@ -59,7 +59,6 @@ audio_init()
 	sound_init();
 
 	audio_out = wav_file_open( "audio_out.wav", SAMPLE_RATE, WAV_FMT_PCM_FLOAT, 32, 1 );
-	audio_pull_flag = 0;
 }
 
 void
