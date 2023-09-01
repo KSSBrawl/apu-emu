@@ -6,8 +6,6 @@
 #include "wav_file.h"
 #include "SDL2/SDL_audio.h"
 
-atomic_int audio_pull_flag;
-
 float sample_buffer[SAMPLE_RATE / 60];
 static SDL_AudioDeviceID device;
 

@@ -3,10 +3,8 @@
 
 #define SAMPLE_RATE 48000
 
-#include <stdatomic.h>
 #include <stdio.h>
 
-extern atomic_int audio_pull_flag;
 extern float sample_buffer[SAMPLE_RATE / 60];
 extern FILE *audio_out;
 
