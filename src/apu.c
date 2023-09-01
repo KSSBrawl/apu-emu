@@ -208,6 +208,7 @@ update_sweep_freq( ApuChan *ch )
 	{
 		int16_t add = ch->freq >> ch->sweep.shift;
 
+		// pulse 1's adder is bugged and performs ones' complement instead of two's complement
 		if ( ch->sweep.negate ) add = -add - ch->is_sq1;
 
 		ch->sweep.target = ch->freq + add;
@@ -514,7 +515,6 @@ apu_clock( float *sample_out, unsigned int *irq_out )
 
 	// calculate channel output levels
 	// (magic numbers courtesy of https://www.nesdev.org/wiki/APU_Mixer)
-
 
 #ifdef APU_MIXER_USE_LOOKUP
 	int sq1_out		= volume( sq1 ) * sq1->sequencer_val;
